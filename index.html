@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ABC News</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <button class="hamburger" id="hamburger-btn" aria-label="Open menu">&#9776;</button>
+      <a href="index.html">
+        <img src="123.png" alt="Logo" style="width:100px;vertical-align:middle;">
+        <h1 style="display:inline-block; vertical-align:middle;">ABC News</h1>
+      </a>
+    </header>
+
+    <nav>
+      <div class="nav-links"></div>
+      <div class="nav-right">
+        <input class="search" type="search" placeholder="Search...">
+        <input type="date" class="date-picker" id="date-picker">
+        <div class="user-lists">
+          <button class="list-btn" id="liked-btn">👍 Liked</button>
+          <button class="list-btn" id="disliked-btn">👎 Disliked</button>
+          <button class="list-btn" id="favorites-btn">⭐ Favorites</button>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <div class="news-card" id="news-card-template" style="display:none">
+        <img src="" id="news-img">
+        <div class="news-card-content">
+          <h3 id="news-title"></h3>
+          <p id="news-desc"></p>
+          <h6 id="news-source"></h6>
+          <div class="card-actions">
+            <button class="action-btn like-btn"><span class="icon">👍</span><span class="count">0</span></button>
+            <button class="action-btn dislike-btn"><span class="icon">👎</span><span class="count">0</span></button>
+            <button class="action-btn favorite-btn"><span class="icon">⭐</span></button>
+          </div>
+          <a href="#" id="news-link" target="_blank">Read More</a>
+        </div>
+      </div>
+      <div class="card-container" id="card-container"></div>
+      <div class="pagination-container" id="pagination-container" style="display: none;">
+        <div class="pagination-info"><span id="pagination-info">Showing 1-10 of 0 articles</span></div>
+        <div class="pagination-controls">
+          <button class="pagination-btn" id="prev-page-btn" disabled>← Previous</button>
+          <div class="page-numbers" id="page-numbers"></div>
+          <button class="pagination-btn" id="next-page-btn" disabled>Next →</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="news-modal" class="news-modal">
+    <div class="news-modal-content">
+      <span class="news-modal-close" id="news-modal-close">&times;</span>
+      <img id="modal-img" src="" alt="News Image">
+      <h2 id="modal-title"></h2>
+      <h5 id="modal-source"></h5>
+      <hr>
+      <p id="modal-desc"></p>
+      <a id="modal-link" href="#" target="_blank">Read Full Article</a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function populateCategoryLinks() {
+      const navLinks = document.querySelector('.nav-links');
+      const categories = ['home','general', 'business', 'entertainment', 'health', 'science', 'sports', 'technology'];
+      categories.forEach(category => {
+        const link = document.createElement('a');
+        link.href = `index.html?category=${category}`;
+        link.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        link.classList.add('nav-link');
+        navLinks.appendChild(link);
+      });
+    }
+    function highlightActiveCategory() {
+      const params = new URLSearchParams(window.location.search);
+      const currentCategory = params.get('category') || 'general';
+
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.href.includes(`category=${currentCategory}`)) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      populateCategoryLinks();
+      highlightActiveCategory();
+      const hamburgerBtn = document.getElementById('hamburger-btn');
+      const navLinks = document.querySelector('.nav-links');
+      hamburgerBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        if (navLinks.classList.contains('open')) {
+          hamburgerBtn.innerHTML = '&times;';
+        } else {
+          hamburgerBtn.innerHTML = '&#9776;';
+        }
+      });
+      navLinks.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+          navLinks.classList.remove('open');
+          hamburgerBtn.innerHTML = '&#9776;';
+        }
+      });
+
+      document.getElementById('liked-btn').addEventListener('click', function() {
+        window.location.search = updateQueryStringParameter(window.location.search, 'list', 'liked');
+      });
+      document.getElementById('disliked-btn').addEventListener('click', function() {
+        window.location.search = updateQueryStringParameter(window.location.search, 'list', 'disliked');
+      });
+      document.getElementById('favorites-btn').addEventListener('click', function() {
+        window.location.search = updateQueryStringParameter(window.location.search, 'list', 'favorites');
+      });
+    });
+
+    function updateQueryStringParameter(uri, key, value) {
+      const re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
+      const separator = uri.indexOf('?') !== -1 ? '&' : '?';
+      if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + '=' + value + '$2');
+      } else {
+        return uri + separator + key + '=' + value;
+      }
+    }
+  </script>
+</body>
+</html>
